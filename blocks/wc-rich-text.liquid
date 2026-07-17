@@ -1,0 +1,108 @@
+{% style %}
+  .wc--{{block.id}} h1,
+  .wc--{{block.id}} h2,
+  .wc--{{block.id}} h3,
+  .wc--{{block.id}} h4,
+  .wc--{{block.id}} h5,
+  .wc--{{block.id}} h6 {
+      margin: 0 0 12px;
+      font-weight: 600;
+      line-height: 1.25;
+      color: inherit;
+  }
+
+  .wc--{{block.id}} h1 { font-size: 28px; }
+  .wc--{{block.id}} h2 { font-size: 24px; }
+  .wc--{{block.id}} h3 { font-size: 20px; }
+  .wc--{{block.id}} h4 { font-size: 18px; }
+  .wc--{{block.id}} h5 { font-size: 16px; }
+  .wc--{{block.id}} h6 { font-size: 14px; }
+
+  .wc--{{block.id}} p {
+      margin: 0 0 12px;
+      font-size: 16px;
+      line-height: 1.5;
+  }
+
+  .wc--{{block.id}} br {
+      display: block;
+      margin-bottom: 8px;
+      content: "";
+  }
+
+  .wc--{{block.id}} strong,
+  .wc--{{block.id}} b {
+      font-weight: 600;
+  }
+
+  .wc--{{block.id}} em,
+  .wc--{{block.id}} i {
+      font-style: italic;
+  }
+
+  .wc--{{block.id}} u {
+      text-decoration: underline;
+  }
+
+  .wc--{{block.id}} span {
+      font-size: inherit;
+      line-height: inherit;
+  }
+
+  .wc--{{block.id}} a {
+      color: inherit;
+      text-decoration: underline;
+      cursor: pointer;
+  }
+
+  .wc--{{block.id}} a:hover {
+      text-decoration: none;
+  }
+
+  .wc--{{block.id}} ul,
+  .wc--{{block.id}} ol {
+      margin: 0 0 12px;
+      padding-left: 20px;
+      line-height: 1.5;
+  }
+
+  .wc--{{block.id}} ul {
+    list-style-type: disc;
+  }
+
+  .wc--{{block.id}} ol {
+    list-style-type: decimal;
+  }
+
+  .wc--{{block.id}} li {
+    margin-bottom: 6px;
+  }
+{% endstyle %}
+
+<div class="wc--{{ block.id }}">
+  {{ block.settings.rich_text_block }}
+</div>
+
+{% schema %}
+{
+  "name": "wc-rich-text",
+  "tag": "div",
+  "class": "wc--rich-text",
+  "blocks": [],
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "rich_text_block",
+      "label": "Rich text"
+    }
+  ],
+  "presets": [
+    {
+      "name": "wc-rich-text",
+      "settings": {
+        "rich_text_block": "<p>Hello, world!</p>"
+      }
+    }
+  ]
+}
+{% endschema %}

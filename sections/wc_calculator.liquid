@@ -1,0 +1,516 @@
+{%- assign error_icon_data = 'data:image/svg+xml,%3Csvg%20xmlns="http://www.w3.org/2000/svg"%20width="16px"%20height="16px"%20viewBox="0%200%2014%2014"%20fill="none"%3E%3Cpath%20d="M7%200C3.13438%200%200%203.13438%200%207C0%2010.8656%203.13438%2014%207%2014C10.8656%2014%2014%2010.8656%2014%207C14%203.13438%2010.8656%200%207%200ZM7%203.0625C7.43125%203.0625%207.78125%203.4125%207.78125%203.84375V7.65625C7.78125%208.0875%207.43125%208.4375%207%208.4375C6.56875%208.4375%206.21875%208.0875%206.21875%207.65625V3.84375C6.21875%203.4125%206.56875%203.0625%207%203.0625ZM7%2010.9375C6.51875%2010.9375%206.125%2010.5438%206.125%2010.0625C6.125%209.58125%206.51875%209.1875%207%209.1875C7.48125%209.1875%207.875%209.58125%207.875%2010.0625C7.875%2010.5438%207.48125%2010.9375%207%2010.9375Z"%20fill="rgba(214,0,0,1)"/%3E%3C/svg%3E' -%}
+{%- assign tick_icon_data = 'data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2020%2020%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224px%22%20height%3D%2224px%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M15.78%205.97a.75.75%200%200%201%200%201.06l-6.5%206.5a.75.75%200%200%201-1.06%200l-3.25-3.25a.75.75%200%201%201%201.06-1.06l2.72%202.72%205.97-5.97a.75.75%200%200%201%201.06%200Z%22%3E%3C/path%3E%3C/svg%3E' -%}
+{% assign enabled_full_width = section.settings.section_full_width %}
+{% assign enabled_sidebar = section.settings.enable_sidebar %}
+
+{%- style -%}
+
+  .wc--calculator-{{ section.id }} {
+  --wc-bg-color: #ffffff;
+  --wc-text-color: #3d3d3d;
+  --wc-border-color: #929292;
+  --wc-error-color: #d60000;
+  }
+
+  .wc--calculator-{{ section.id }} {
+  width:100%;
+  {%if enabled_full_width == false %}
+    max-width : {{ section.settings.section_width }}px;
+    margin: 0 auto;
+  {% endif %}
+  padding-block: {{ section.settings.padding_block }}px;
+  padding-inline: {{ section.settings.padding_inline }}px;
+  background-color:var(--wc-bg-color);
+  color:var(--wc-text-color);
+  }
+
+  .wc--calculator-section {
+  display:grid;
+  grid-template-columns: {% if enabled_sidebar %}0.6fr 0.4fr{% else %}1fr{% endif %};
+  align-items: start;
+  gap:{{ section.settings.blocks_gap }}px;
+  }
+
+  @media (max-width: 767px) {
+  .wc--calculator-section {
+      grid-template-columns:1fr;
+  }
+  }
+
+  .wc--calculator-wrapper *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+  }
+
+  .wc--calc-heading {
+    font-size:20px;
+    font-weight:bold;
+  }
+
+  .wc--calculator-wrapper,
+  .wc--calc-inputs-group {
+  display:grid;
+  gap:16px;
+  }
+
+  .wc--calc-input-wrapper{
+  display:grid;
+  }
+
+  .wc--calc-input-label {
+  position: relative;
+  top: 8px;
+  left: 8px;
+  padding: 0 8px;
+  font-size: 16px;
+  line-height: 16px;
+  background-color: var(--wc-bg-color);
+  max-width: fit-content;
+  }
+
+  .wc--calc-input-element {
+  padding: 16px;
+  font-size: 16px;
+  border: 1px solid var(--wc-border-color);
+  border-radius: 8px;
+  color:var(--wc-text-color);
+  outline:none !important;
+  box-shadow:none !important;
+  }
+
+  .wc--calc-error {
+  display: none;
+  align-items: center;
+  color: var(--wc-error-color);
+  margin-top:8px;
+  }
+
+  .wc--calc-output{
+  display:none;
+  gap:10px;
+  }
+
+  .wc--output-icon{
+  display:flex;
+  align-items:center
+  }
+
+  .wc--calc-input-wrapper.has-error .wc--calc-input-element {
+  border: 1.5px solid var(--wc-error-color);
+  }
+  .wc--calc-input-wrapper.has-error .wc--calc-error {
+  display: flex;
+  }
+  .wc--calc-output.has-output {
+  display: grid;
+  }
+
+  .wc--calc-input-wrapper.has-error .wc--calc-error::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-right: 8px;
+  background: center / contain no-repeat url('{{- error_icon_data -}}');
+  }
+
+  .wc--calc-output.has-output .wc--output-icon::before {
+  content: "";
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  margin-right: 8px;
+  background: center / contain no-repeat url('{{- tick_icon_data -}}');
+  }
+
+  .wc--blocks-wrapper {
+    display:grid;
+    gap:{{ section.settings.blocks_gap }}px;
+  }
+  .wc--page-details-wrapper {
+    display:grid;
+    gap:{{ section.settings.blocks_gap }}px;
+    margin-bottom:{{ section.settings.blocks_gap }}px;
+  }
+  .wc--page-title {
+    margin-block:0;
+  }
+
+{%- endstyle -%}
+
+<div class="wc--calculator-{{ section.id }}">
+
+  <div class="wc--page-details-wrapper">
+    {% if section.settings.show_page_title == true %}
+    <h1 class="wc--page-title">{{ page.title | escape }}</h1>
+    {% endif %}
+    {% if section.settings.show_page_content == true %}
+      <div class="wc--page-content">{{ page.content }}</div>
+    {% endif %}
+  </div>
+
+  <div class="wc--calculator-section">  
+
+    <div class="wc--calculator-wrapper">
+
+        {% if section.settings.section_textarea %}
+          <p class="wc--section-text-area">
+            {{ section.settings.section_textarea }}
+          </p>
+        {% endif %}
+
+        <h3 class="wc--calc-heading">{{ 'calculator_heading' | t }}</h3>
+
+        <div class="wc--calc-inputs-group">
+          {% assign input_fields = 'wall-width,wall-height,roll-width,roll-length,pattern-size,pattern-repeat'
+            | split: ','
+          %}
+          {% for field in input_fields %}
+            {% assign label_text = '' | append: field | replace: '-', '_' | append: '_label' %}
+            {% assign input_value = '' %}
+            {% case field %}
+              {% when 'wall-width' %}
+                {% assign input_value = '4.5' %}
+              {% when 'wall-height' %}
+                {% assign input_value = '2.4' %}
+              {% when 'roll-width' %}
+                {% assign input_value = '0.53' %}
+              {% when 'roll-length' %}
+                {% assign input_value = '10.05' %}
+              {% when 'pattern-size' %}
+                {% assign input_value = '0.53' %}
+              {% when 'pattern-repeat' %}
+                {% assign input_value = '2' %}
+            {% endcase %}
+            <div
+              class="wc--calc-input-wrapper"
+              id="{{ section.id }}-{{ field }}-wrapper"
+              {% if field == 'pattern-size' and input_value == '1' %}
+                style="display:none;"
+              {% endif %}
+            >
+              <label for="{{ section.id }}-{{ field }}" class="wc--calc-input-label">
+                {{- label_text | t -}}
+              </label>
+
+              {% if field == 'pattern-repeat' %}
+                {% assign options = '1:no_repeat,2:straight_match,3:half_drop,4:third_drop,5:quarter_drop'
+                  | split: ','
+                %}
+                <select id="{{ section.id }}-{{ field }}" class="wc--calc-input-element">
+                  {% for option in options %}
+                    {% assign pair = option | split: ':' %}
+                    <option
+                      value="{{ pair[0] }}"
+                      {% if input_value == pair[0] %}
+                        selected
+                      {% endif %}
+                    >
+                      {{ pair[1] | t }}
+                    </option>
+                  {% endfor %}
+                </select>
+              {% else %}
+                <input
+                  type="number"
+                  id="{{ section.id }}-{{ field }}"
+                  class="wc--calc-input-element"
+                  value="{{- input_value -}}"
+                >
+              {% endif %}
+
+              <span class="wc--calc-error"></span>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="wc--calc-output">
+          <p id="{{ section.id }}-rolls" class="wc--output-icon"></p>
+          <p id="{{ section.id }}-note"></p>
+        </div>
+
+    </div>
+
+    <div class="wc--blocks-wrapper">
+      {% content_for 'blocks' %}
+    </div>
+  
+  </div>
+
+</div>
+
+<script>
+  (function () {
+    function getFitment(patternMatch) {
+      switch (patternMatch) {
+        case '1':
+        default:
+          return 0;
+        case '2':
+          return 1;
+        case '3':
+          return 0.5;
+        case '4':
+          return 0.33;
+        case '5':
+          return 0.2;
+      }
+    }
+
+    function calculateRollCount({ wallWidth, wallHeight, rollWidth, rollLength, patternSize, fitment }) {
+      if (patternSize <= 0 || fitment == 0) patternSize = 1;
+
+      const numCoverings = Math.ceil(wallWidth / rollWidth); // antal våder
+      const numFullRepeats = Math.floor(wallHeight / patternSize);
+      const leftOfLastReport = (wallHeight / patternSize - numFullRepeats) * patternSize;
+      const repeatFitment = fitment == 0 ? patternSize : patternSize * fitment;
+      let waste =
+        repeatFitment > leftOfLastReport
+          ? repeatFitment - leftOfLastReport
+          : patternSize - leftOfLastReport + repeatFitment; // skärsmån mellan våder (spill)
+
+      if (fitment == 0) {
+        waste = 0;
+      }
+
+      let numRolls = 0;
+      let leftOfCurrentRoll = rollLength;
+
+      // Not beautiful, should be refactored to not use a loop, if possible
+      for (let i = 0; i < numCoverings; i++) {
+        if (leftOfCurrentRoll == rollLength) {
+          numRolls++;
+        }
+
+        leftOfCurrentRoll = leftOfCurrentRoll - wallHeight;
+        if (fitment != 0) {
+          leftOfCurrentRoll = leftOfCurrentRoll - waste;
+        }
+
+        if (leftOfCurrentRoll < wallHeight) {
+          if (fitment == 0 && waste == 0) {
+            waste = leftOfCurrentRoll;
+          }
+          leftOfCurrentRoll = rollLength;
+        }
+      }
+
+      const coveringsPerRoll = Math.ceil(numCoverings / numRolls);
+
+      return {
+        rolls: numRolls,
+        waste: waste ?? 0,
+        lengthsPerRoll: coveringsPerRoll,
+        totalCoverings: numCoverings,
+      };
+    }
+
+    const translations = {
+      output: {
+        rolls_message: `{{ 'output_rolls' | t }}`,
+        note_message: `{{ 'output_note' | t }}`,
+      },
+      errors: {
+        enter_a_valid_number: `{{ 'error_please_enter_a_valid_number' | t }}`,
+      },
+    };
+
+    // Main DOM logic
+    const sectionId = '{{ section.id }}';
+    const calculator = document.querySelector(`.wc--calculator-wrapper`);
+    if (!calculator) return;
+
+    // the pattern-size should come after the pattern-repeat as it depends on it
+    const inputs = ['wall-width', 'wall-height', 'roll-width', 'roll-length', 'pattern-repeat', 'pattern-size'];
+    const outputWrapper = calculator.querySelector('.wc--calc-output');
+    const output = {
+      rolls: calculator.querySelector(`#${sectionId}-rolls`),
+      note: calculator.querySelector(`#${sectionId}-note`),
+    };
+
+    function showError(inputEl, message) {
+      const wrapper = inputEl.closest('.wc--calc-input-wrapper');
+      wrapper.classList.add('has-error');
+      wrapper.querySelector('.wc--calc-error').textContent = message;
+    }
+
+    function clearError(inputEl) {
+      const wrapper = inputEl.closest('.wc--calc-input-wrapper');
+      wrapper.classList.remove('has-error');
+      wrapper.querySelector('.wc--calc-error').textContent = '';
+    }
+
+    function togglePatternSize(patternRepeatValue) {
+      const patternSizeInput = document.getElementById(`${sectionId}-pattern-size`);
+      const patternSizeWrapper = patternSizeInput.closest('.wc--calc-input-wrapper');
+
+      if (patternRepeatValue === '1') {
+        patternSizeWrapper.style.display = 'none';
+      } else {
+        patternSizeWrapper.style.display = 'grid';
+      }
+    }
+
+    function calculateAndRender() {
+      const values = {};
+      let hasError = false;
+
+      inputs.forEach((id) => {
+        const inputEl = document.getElementById(`${sectionId}-${id}`);
+        let value = inputEl.value;
+        clearError(inputEl);
+
+        if (id !== 'pattern-repeat' && !(id === 'pattern-size' && values['pattern-repeat'] === '1')) {
+          value = parseFloat(value);
+          if (isNaN(value) || value <= 0) {
+            showError(inputEl, translations.errors.enter_a_valid_number);
+            hasError = true;
+          }
+        }
+
+        values[id] = value;
+      });
+
+      togglePatternSize(values['pattern-repeat']);
+
+      if (hasError) {
+        outputWrapper.classList.remove('has-output');
+        return;
+      }
+
+      const patternRepeatValue = values['pattern-repeat'];
+      const fitment = getFitment(patternRepeatValue);
+      const patternSize = patternRepeatValue === '1' ? 1 : values['pattern-size'];
+
+      const data = calculateRollCount({
+        wallWidth: values['wall-width'],
+        wallHeight: values['wall-height'],
+        rollWidth: values['roll-width'],
+        rollLength: values['roll-length'],
+        patternSize,
+        fitment,
+      });
+
+      output.rolls.textContent = translations.output.rolls_message.replace('--rolls_count--', data.rolls);
+      output.note.textContent = translations.output.note_message
+        .replace('--coverings_count--', data.totalCoverings)
+        .replace('--lengths_count--', data.lengthsPerRoll);
+
+      outputWrapper.classList.add('has-output');
+    }
+
+    calculateAndRender();
+
+    inputs.forEach((id) => {
+      const inputEl = document.getElementById(`${sectionId}-${id}`);
+      inputEl.addEventListener('input', calculateAndRender);
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "WC Calculator",
+  "tag": "section",
+  "enabled_on": {
+    "templates": ["page"]
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_page_title",
+      "label": "Show page title"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_page_content",
+      "label": "Show page content"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sidebar",
+      "label": "Enable sidebar",
+      "default":true
+    },
+    {
+      "type": "checkbox",
+      "id": "section_full_width",
+      "label": "Section full width",
+      "default":false
+    },
+    {
+      "type": "range",
+      "id": "section_width",
+      "min": 1000,
+      "max": 2000,
+      "step": 100,
+      "unit": "px",
+      "label": "Section width",
+      "default": 1200,
+      "visible_if": "{{ section.settings.section_full_width == false }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_block",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Block padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_inline",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Inline padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "blocks_gap",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Blocks gap",
+      "default": 16
+    },
+    {
+      "type": "textarea",
+      "id": "section_textarea",
+      "label": "Calculator main text",
+      "default": "Our wallpaper calculator makes it easy to work out how many rolls you need. The number or rolls depends on the dimensions of the walls to be papered; the dimensions of the rolls and the pattern repeat length of the design you have chosen."
+    }
+  ],
+  "blocks": [
+    { "type": "@theme"},
+    { "type": "@app" }
+  ],
+  "locales": {
+    "en": {
+      "calculator_heading": "How many rolls do you need?",
+      "wall_width_label": "Wall width (m)",
+      "wall_height_label": "Wall height (m)",
+      "roll_width_label": "Roll width (m)",
+      "roll_length_label": "Roll length (m)",
+      "pattern_size_label": "Pattern size (m)",
+      "pattern_repeat_label": "Pattern repeat",
+      "no_repeat": "No repeat",
+      "straight_match": "Straight match",
+      "half_drop": "Half drop",
+      "third_drop": "Third drop",
+      "quarter_drop": "Quarter drop",
+      "output_rolls": "We recommend that you buy --rolls_count-- rolls.",
+      "output_note": "You need --coverings_count-- coverings. We estimate that you get --lengths_count-- lengths per roll. Remember that our wallpaper calculator only provides an estimate of the optimal number of rolls. If the recommendation is incorrect and you have too many, you can always return the unused rolls.",
+      "error_please_enter_a_valid_number": "Please enter a valid number."
+    }
+  }
+}
+{% endschema %}

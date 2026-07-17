@@ -1,0 +1,334 @@
+{% comment %}
+  Usage:
+  {% render 'wc-calculator',
+    product: product,
+    block_settings:block.settings
+  %}
+{% endcomment %}
+
+<style>
+    #wc-drawer {
+      display:block;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+  .wc-d-overlay {
+    display:block !important;
+    position: fixed;
+    inset: 0;
+    opacity: 0; /* hidden by default */
+    background: rgba(70, 47, 47, 0.5);
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  #wc-drawer.open {
+    pointer-events: auto;
+  }
+  #wc-drawer.open .wc-d-overlay {
+    opacity: 0.9;
+    pointer-events: auto;
+  }
+
+    .wc-d-content {
+      position: fixed;
+      top: 0;
+      right: -100%; /* hidden offscreen */
+      width: 100%;
+      max-width: 30rem;
+      height: 100%;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-end-start-radius: 2rem;
+      border-start-start-radius: 2rem;
+      transition: right 0.3s ease;
+    }
+
+    #wc-drawer.open .wc-d-content {
+      right: 0;
+    }
+
+    .wc-d-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      border-block-end: 1px solid rgba(31, 31, 31, 0.06);
+    }
+
+    .wc-d-close-button {
+      background: transparent;
+      cursor: pointer;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgb(31, 31, 31, 0.06);
+      border-radius: 100%;
+      padding: 0.25rem;
+    }
+
+    .wc-d-main {
+      display: grid;
+      overflow-y: hidden;
+      max-height: 100%;
+      align-content: start;
+    }
+
+    .wc-d-main * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .wc-d-main-container {
+      display: grid;
+      overflow: auto;
+      padding: 2rem;
+    }
+
+    .wc-d-wrapper,
+    .wc-d-form {
+      display: grid;
+      gap: 2rem;
+    }
+
+    .wc-d-h-wrapper,
+    .wc-d-inputs-container,
+    .wc-d-results,
+    .wc-d-buttons {
+      display: grid;
+      gap: .5rem;
+    }
+
+    .wc-d-input-wrapper {
+      position: relative;
+      display: grid;
+      gap: .25rem;
+    }
+
+    .wc-d-input-wrapper label {
+      position: absolute;
+      font-size: .75rem;
+      top: 1rem;
+      left: 1rem;
+      line-height: 1rem;
+    }
+
+    .wc-d-input-wrapper input {
+      width: 100%;
+      height: 3rem;
+      padding: 1rem !important;
+      border: 1px solid rgba(31, 31, 31, 0.06);
+      border-radius: 1rem;
+    }
+
+    .wc-d-cart-btn {
+      background: rgba(90, 108, 94, 1);
+      color: white;
+      border: none;
+      cursor: pointer;
+      padding: 1rem;
+      border-radius: 0.5rem
+    }
+
+    .wc-d-cancel-btn {
+      background: transparent;
+      border: none;
+      justify-self: center;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+</style>
+
+<div>
+  <button id="openModal">{{ block_settings.text }}</button>
+</div>
+
+<div id="wc-drawer">
+  <div class="wc-d-overlay"></div>
+  <div class="wc-d-content">
+    <div class="wc-d-header">
+      <div><span>Drawer Header</span></div>
+      <div>
+        <button class="wc-d-close-button" type="button">
+          <svg
+            width="100%"
+            height="100%"
+            viewBox="0 0 20 20"
+            stroke="currentColor"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15L15 5M5 5L15 15"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="wc-d-main">
+      <div class="wc-d-main-container">
+        <div class="wc-d-wrapper">
+          <div class="wc-d-h-wrapper">
+            <h2>Wallpaper calculator</h2>
+            <p>How many rolls do you need?</p>
+          </div>
+          <form class="wc-d-form" onSubmit="{onSubmitClick}">
+            <div class="wc-d-inputs-container">
+              <div class="wc-d-input-wrapper">
+                <label for="wall-width">Wall width (m)</label>
+                <input id="wall-width" type="number" step="0.01" value="">
+                <span id="wall-width-error hidden"></span>
+              </div>
+              <div class="wc-d-input-wrapper">
+                <label for="wall-height">Wall height (m)</label>
+                <input id="wall-height" type="number" step="0.01" value="">
+                <span id="wall-height-error hidden"></span>
+              </div>
+            </div>
+            <div class="wc-d-results">
+              <span>You need 378 coverings.</span>
+              <span>We estimated that you get 1 length per roll.</span>
+              <span>You have a cutting margin of 33 cm.</span>
+              <span>We recommend that you buy 378 rolls.</span>
+              <span>Fill the form to calculate the number of rolls you need.</span>
+            </div>
+            <div class="wc-d-buttons">
+              <button type="button" class="wc-d-cart-btn">Add rolls to cart</button>
+              <button type="button" class="wc-d-cancel-btn">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const TELEPORT_TO_BODY = true;
+
+  // Settings
+  const rollWidth = 0.53;
+  const rollLength = 10;
+  const patternSizeMeters = 0.01;
+  const fitment = 0.05;
+
+  // Elements
+  const modal = document.getElementById('wc-drawer');
+  const openModalBtn = document.getElementById('openModal');
+  const closeModalBtn = modal.querySelector('.wc-d-close-button');
+  const overlay = modal.querySelector('.wc-d-overlay');
+  const cancelBtn = modal.querySelector('.wc-d-cancel-btn');
+
+  const wallWidthInput = modal.querySelector('#wall-width');
+  const wallHeightInput = modal.querySelector('#wall-height');
+  const resultDiv = modal.querySelector('.wc-d-results');
+  const addToCartBtn = modal.querySelector('.wc-d-cart-btn');
+
+  // Teleport modal to body
+  if (TELEPORT_TO_BODY && modal.parentNode !== document.body) {
+    document.body.appendChild(modal);
+  }
+
+  // Calculator logic
+  function calculateRollCount({ wallWidth, wallHeight, rollWidth, rollLength, patternSize, fitment }) {
+    const stripsPerRoll = Math.floor(rollLength / (wallHeight + patternSize));
+    const totalStrips = Math.ceil(wallWidth / rollWidth);
+    const rolls = totalStrips / stripsPerRoll;
+    const coveringsPerRoll = stripsPerRoll;
+    const totalCoverings = totalStrips;
+    const waste = fitment;
+    return { rolls, coveringsPerRoll, totalCoverings, waste };
+  }
+
+  function renderResult(calculatorResult, showWaste) {
+    if (!calculatorResult) {
+      resultDiv.innerHTML = 'Fill the form to calculate the number of rolls you need.';
+      addToCartBtn.disabled = true;
+      return;
+    }
+
+    const { rolls, coveringsPerRoll, totalCoverings, waste } = calculatorResult;
+    const rollsCeil = Math.ceil(rolls);
+
+    let html = `
+      <span>Total coverings: ${totalCoverings}</span>
+      <span>Coverings per roll: ${coveringsPerRoll}</span>
+    `;
+    if (showWaste) html += `<span>Cutting margin: ${Math.floor(waste * 100)}%</span>`;
+    html += `<span>Recommended rolls: ${rollsCeil}</span>`;
+
+    resultDiv.innerHTML = html;
+    addToCartBtn.disabled = rollsCeil <= 0 || isNaN(rollsCeil);
+  }
+
+  function updateResult() {
+    const width = parseFloat(wallWidthInput.value);
+    const height = parseFloat(wallHeightInput.value);
+
+    if (!width || !height) {
+      renderResult(null, fitment > 0);
+      return;
+    }
+
+    const calculatorResult = calculateRollCount({
+      wallWidth: width,
+      wallHeight: height,
+      rollWidth,
+      rollLength,
+      patternSize: patternSizeMeters,
+      fitment,
+    });
+
+    renderResult(calculatorResult, fitment > 0);
+  }
+
+  wallWidthInput.addEventListener('input', updateResult);
+  wallHeightInput.addEventListener('input', updateResult);
+
+  // Open modal (slide-in)
+  function openModal() {
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.overflow = 'hidden';
+    document.body.style.paddingRight = `${scrollbarWidth}px`;
+    modal.classList.add('open');
+  }
+
+  // Close modal (slide-out)
+  function closeModal() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+  }
+
+  openModalBtn.addEventListener('click', openModal);
+  closeModalBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', closeModal);
+
+  // Cancel button: reset inputs
+  cancelBtn.addEventListener('click', () => {
+    wallWidthInput.value = '';
+    wallHeightInput.value = '';
+    updateResult();
+  });
+
+  // Add to cart
+  addToCartBtn.addEventListener('click', () => {
+    const width = parseFloat(wallWidthInput.value);
+    const height = parseFloat(wallHeightInput.value);
+    const calculatorResult = calculateRollCount({
+      wallWidth: width,
+      wallHeight: height,
+      rollWidth,
+      rollLength,
+      patternSize: patternSizeMeters,
+      fitment,
+    });
+    alert(`Added ${Math.ceil(calculatorResult.rolls)} rolls to cart!`);
+  });
+</script>

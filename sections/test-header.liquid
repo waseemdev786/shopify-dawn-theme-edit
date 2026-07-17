@@ -1,0 +1,38 @@
+<div class="test-header">
+  <div class="test-header__title">{{ settings.header_title }}</div>
+  <div class="test-header__text">{{ settings.header_text }}</div>
+  <a href="{{ settings.button_link }}" class="test-header__button">{{ settings.button_text }}</a>   
+</div>
+
+{% schema %}
+{
+  "name": "Test Header",
+  "class": "test-header",
+  "settings": [
+    {
+      "type": "text",
+      "id": "header_title",
+      "label": "Header Title",
+      "default": "TISSO VISION"
+    },
+    {
+      "type": "text",
+      "id": "header_text",
+      "label": "Header Text",
+      "default": "Find the ideal gift for your loved ones."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "CHOOSE GIFT"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link",
+      "default": "/"
+    }
+  ]
+}
+{% endschema %}

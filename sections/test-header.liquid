@@ -1,41 +1,173 @@
-<div class="test-header">
-  <div class="test-header__title">{{ settings.header_title }}</div>
-  <div class="test-header__text">{{ settings.header_text }}</div>
-  <a href="{{ settings.button_link }}" class="test-header__button">{{ settings.button_text }}</a>   
-</div>
+{% liquid
+  assign settings = section.settings
+%}
+
+<header class="test-header">
+  <div class="test-header__icons">
+    {% render 'test-icons', icon: 'menu' %}
+    {% render 'test-icons', icon: 'close' %}
+  </div>
+
+  {% if settings.header_title != blank %}
+    <h2 class="test-header__title">
+      {{ settings.header_title }}
+    </h2>
+  {% endif %}
+
+  {% if settings.header_text != blank %}
+    <p class="test-header__text">
+      {{ settings.header_text }}
+    </p>
+  {% endif %}
+
+  {% if settings.button_text != blank and settings.button_link != blank %}
+    <a
+      href="{{ settings.button_link }}"
+      class="test-header__button"
+    >
+      {{ settings.button_text }}
+    </a>
+  {% endif %}
+</header>
+
+<style>
+  .test-header {
+  --padding-x: 2rem;
+  --padding-y: 3rem;
+  --max-width: 1200px;
+  --gap: 1rem;
+  --border-radius: 0.5rem;
+
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--padding-y) var(--padding-x);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap);
+
+  text-align: center;
+}
+
+.test-header__icons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.test-header__icons svg {
+  display: block;
+  width: auto;
+  height: auto;
+  color: currentColor;
+}
+
+.test-header__title {
+  margin: 0;
+
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.test-header__text {
+  max-width: 40rem;
+  margin: 0;
+
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgb(var(--color-foreground), 0.75);
+}
+
+.test-header__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 48px;
+  padding: 0.875rem 1.75rem;
+
+  border: 1px solid currentColor;
+  border-radius: var(--border-radius);
+
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.test-header__button:hover {
+  background: currentColor;
+  color: #fff;
+}
+
+.test-header__button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.test-header__button:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 749px) {
+  .test-header {
+    --padding-x: 1.25rem;
+    --padding-y: 2rem;
+  }
+
+  .test-header__icons {
+    gap: 0.75rem;
+  }
+
+  .test-header__title {
+    font-size: 2rem;
+  }
+
+  .test-header__button {
+    width: 100%;
+    max-width: 18rem;
+  }
+}
+</style>
 
 {% schema %}
 {
   "name": "Test Header",
-  "class": "test-header",
+  "class": "test-header-section",
   "settings": [
     {
       "type": "text",
       "id": "header_title",
-      "label": "Header Title",
+      "label": "Header title",
       "default": "TISSO VISION"
     },
     {
-      "type": "text",
+      "type": "textarea",
       "id": "header_text",
-      "label": "Header Text",
+      "label": "Header text",
       "default": "Find the ideal gift for your loved ones."
     },
     {
       "type": "text",
       "id": "button_text",
-      "label": "Button Text",
+      "label": "Button text",
       "default": "CHOOSE GIFT"
     },
     {
       "type": "url",
       "id": "button_link",
-      "label": "Button link",
-      "default": "/"
+      "label": "Button link"
     }
   ],
   "presets": [
-        {
+    {
       "name": "Test Header"
     }
   ]

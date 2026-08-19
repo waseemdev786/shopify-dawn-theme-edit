@@ -53,21 +53,10 @@
         "padding_top": 20,
         "padding_bottom": 20
       }
-    },
-    "test_header_iCCdkx": {
-      "type": "test-header",
-      "name": "Test Header",
-      "settings": {
-        "header_title": "TISSO VISION",
-        "header_text": "Find the ideal gift for your loved ones.",
-        "button_text": "CHOOSE GIFT v",
-        "button_link": ""
-      }
     }
   },
   "order": [
     "announcement-bar",
-    "header",
-    "test_header_iCCdkx"
+    "header"
   ]
 }
